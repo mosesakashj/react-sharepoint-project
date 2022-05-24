@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from 'react-redux'
 import { updateUserDetails } from 'store/userDetailsSlice'
 
-function Login() {
+const Login = () => {
   const { userDetails } = useSelector((state) => state.userDetailsSlice)
   console.log(userDetails)
   const navigate = useNavigate();
@@ -26,7 +26,7 @@ function Login() {
       api.post('auth', { code: code }).then(({ data }) => {
         dispatch(updateUserDetails(data))
         sessionStorage.setItem(process.env.REACT_APP_TOKEN, JSON.stringify(data));
-        navigate("/about")
+        navigate("/dashboard")
       })
     }
   })

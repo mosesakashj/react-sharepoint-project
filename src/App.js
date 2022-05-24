@@ -1,26 +1,11 @@
 import Login from "./Views/Login";
+import Dashboard from "./Views/Dashboard";
+import SharepointSettings from "./Views/SharepointSettings";
 import ProtectedRoute from "Routes/ProtectedRoute";
 import './App.css';
 import Navbar from 'Components/Navbar'
-import { BrowserRouter as Router, Routes, Route, Link, useNavigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
-function MyButton() {
-  let navigate = useNavigate();
-  function handleClick() {
-    navigate('/profile');
-  };
-  return <button onClick={handleClick}>Go Profile</button>;
-};
-
-function About() {
-  return (
-    <div style={{ padding: 20 }}>
-      <h2>About View</h2>
-      <MyButton />
-      <p>Lorem ipsum dolor sit amet, consectetur adip.</p>
-    </div>
-  );
-}
 
 function Profile() {
   return (
@@ -53,8 +38,16 @@ const App = () => {
       <Router>
         <Routes>
           <Route path="/" element={<Login />} />
+          <Route path="*" element={<Login />} />
           <Route path="/sp365-callback" element={<Login />} />
-          <Route exact path="/about" element={<About />} />
+          <Route exact path="/dashboard" element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>} />
+          <Route exact path="/sharepoint" element={
+            <ProtectedRoute>
+              <SharepointSettings />
+            </ProtectedRoute>} />
           <Route path="profile" element={
             <ProtectedRoute>
               <Profile />
