@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Box, Grid, Container, Typography, Card, CardHeader, Divider, CardContent, TextField, Button, FormControlLabel, Checkbox } from '@mui/material';
 
-const Settings = (props) => {
+const SharepointSettings = (props) => {
   const [values, setValues] = useState({
     password: '',
     confirm: ''
@@ -89,4 +89,4 @@ const Settings = (props) => {
 }
 
 
-export default Settings;
+export default SharepointSettings;

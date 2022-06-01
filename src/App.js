@@ -1,6 +1,7 @@
 import Login from "./Views/Login";
 import Dashboard from "./Views/Dashboard";
 import SharepointSettings from "./Views/SharepointSettings";
+import SuperofficeSettings from "./Views/SuperofficeSettings";
 import ProtectedRoute from "Routes/ProtectedRoute";
 import './App.css';
 import Navbar from 'Components/Navbar'
@@ -34,8 +35,8 @@ function OthersProfile() {
 const App = () => {
   return (
     <div>
-      <Navbar />
       <Router>
+        <Navbar />
         <Routes>
           <Route path="/" element={<Login />} />
           <Route path="*" element={<Login />} />
@@ -47,6 +48,10 @@ const App = () => {
           <Route exact path="/sharepoint" element={
             <ProtectedRoute>
               <SharepointSettings />
+            </ProtectedRoute>} />
+          <Route exact path="/superoffice" element={
+            <ProtectedRoute>
+              <SuperofficeSettings />
             </ProtectedRoute>} />
           <Route path="profile" element={
             <ProtectedRoute>

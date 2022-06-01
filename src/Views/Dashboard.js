@@ -6,11 +6,6 @@ import { useNavigate } from 'react-router-dom';
 const Dashboard = (props) => {
   let navigate = useNavigate();
 
-  const handleClick = () => {
-    navigate('/profile');
-  };
-
-
   return (
     <div>
       <Box component="main" sx={{ flexGrow: 1, py: 8 }}>
@@ -20,7 +15,7 @@ const Dashboard = (props) => {
             <Widget title="Sharepoint Config" onClick={() => navigate('/sharepoint')} />
           </Grid>
           <Grid item xl={3} lg={3} sm={6} xs={12}>
-            <Widget title="Superoffice Config" />
+            <Widget title="Superoffice Config" onClick={() => navigate('/superoffice')}/>
           </Grid>
           <Grid item xl={3} lg={3} sm={6} xs={12}>
             <Widget title="Customers" />
