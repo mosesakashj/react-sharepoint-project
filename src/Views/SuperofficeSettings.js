@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import api from 'Plugins/api'
 import { Box, Grid, Container, Typography, Card, CardHeader, Divider, CardContent, TextField, Button, 
   Paper, Table, TableContainer, TableHead, TableRow, TableCell, TableBody, TablePagination } from '@mui/material';
 
@@ -6,10 +7,44 @@ const SuperofficeSettings = (props) => {
 
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [superofficeSetting, setSuperofficeSetting] = useState({})
+  const [listOfTemplates, setListOfTemplates] = useState([])
+  const [listOfCategories, setListOfCategories] = useState([])
+  const [listOfProjectTypes, setListOfProjectTypes] = useState([])
+  
   const [values, setValues] = useState({
     password: '',
     confirm: ''
   });
+
+  useEffect(() => {
+    getFolderTemplates()
+    getCompanyCategories()
+    getProjectTypes()
+  }, []);
+
+  const getFolderTemplates = () => {
+    api.get(`/sharepoint/get_template_folders`).then(({ data }) => {
+      setListOfTemplates(data)
+    })
+  };
+
+  const getCompanyCategories = () => {
+    api.get(`/superoffice/get_company_categories`).then(({ data }) => {
+      setListOfCategories(data)
+    })
+  };
+
+  const getProjectTypes = () => {
+    api.get(`/superoffice/get_project_types`).then(({ data }) => {
+      setListOfProjectTypes(data)
+      // if (!this.superofficeSetting.projecttypetemplates) this.superofficeSetting.projecttypetemplates = {}
+      // data.forEach(project => {
+      //   if (!this.superofficeSetting.projecttypetemplates[project.id]) this.superofficeSetting.projecttypetemplates[project.id] = ''
+      // })
+    })
+  };
+
   function createData(name, code, population, size) {
     const density = population / size;
     return { name, code, population, size, density };
@@ -33,14 +68,6 @@ const SuperofficeSettings = (props) => {
       ...values,
       [event.target.name]: event.target.value
     });
-  };
-  const handleChangePage = (event, newPage) => {
-    setPage(newPage);
-  };
-
-  const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(+event.target.value);
-    setPage(0);
   };
   return (
     <>
@@ -115,15 +142,6 @@ const SuperofficeSettings = (props) => {
                         </TableBody>
                       </Table>
                     </TableContainer>
-                    <TablePagination
-                      rowsPerPageOptions={[10, 25, 100]}
-                      component="div"
-                      count={rows.length}
-                      rowsPerPage={rowsPerPage}
-                      page={page}
-                      onPageChange={handleChangePage}
-                      onRowsPerPageChange={handleChangeRowsPerPage}
-                    />
                   </Paper>
                 </Grid>
               </CardContent>
