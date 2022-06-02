@@ -47,10 +47,10 @@ const SuperofficeSettings = (props) => {
   const getProjectTypes = () => {
     api.get(`/superoffice/get_project_types`).then(({ data }) => {
       setListOfProjectTypes(data)
-      // if (!this.superofficeSetting.projecttypetemplates) this.superofficeSetting.projecttypetemplates = {}
-      // data.forEach(project => {
-      //   if (!this.superofficeSetting.projecttypetemplates[project.id]) this.superofficeSetting.projecttypetemplates[project.id] = ''
-      // })
+      if (superofficeSetting.projecttypetemplates) superofficeSetting.projecttypetemplates = {}
+      data.forEach(project => {
+        if (!superofficeSetting.projecttypetemplates[project.id]) superofficeSetting.projecttypetemplates[project.id] = ''
+      })
     })
   };
 
@@ -59,8 +59,8 @@ const SuperofficeSettings = (props) => {
     return { name, code, population, size, density };
   }
   const columns = [
-    { id: 'name', label: 'Project type', minWidth: 170 },
-    { id: 'code', label: 'Template', minWidth: 100 },
+    { id: 'name', label: 'Project type', width: 170 },
+    { id: 'code', label: 'Template', width: 100 },
   ];
   const rows = [
     createData('India', 'IN', 1324171354, 3287263),
@@ -98,14 +98,42 @@ const SuperofficeSettings = (props) => {
                     <Typography color="textPrimary" gutterBottom variant="h6"> While changing to which state the customer folder should be created ? </Typography>
                   </Grid>
                   <Grid item lg={4} sm={4} xl={4} xs={12}>
-                  <FormControl sx={{ width: '100%' }}>
-                      <InputLabel id="demo-select-small">Age</InputLabel>
+                    <FormControl sx={{ width: '100%' }}>
+                      {/* <InputLabel id="demo-select-small">Age</InputLabel> */}
                       <Select
                         name="statetocreatecustomerfolder"
                         margin="normal"
+                        displayEmpty
+                        inputProps={{ 'aria-label': 'Without label' }}
                         fullWidth
                         labelId="demo-select-small"
                         value={superofficeSetting.statetocreatecustomerfolder}
+                        label="Age"
+                        onChange={handleChange}
+                      >
+                        <MenuItem value="">
+                          <em>None</em>
+                        </MenuItem>
+                        {listOfCategories.map(x => {
+                          return <MenuItem value={x.id} key={x.id}>{x.name}</MenuItem>
+                        })}
+                      </Select>
+                    </FormControl>
+                  </Grid>
+                </Grid>
+                <Grid container spacing={3} sx={{pt: 1}}>
+                  <Grid sx={{ m: 'auto' }} item lg={7} sm={8} xl={7} xs={12}>
+                    <Typography color="textPrimary" gutterBottom variant="h6"> Choose Cutomer Template </Typography>
+                  </Grid>
+                  <Grid item lg={4} sm={4} xl={4} xs={12}>
+                  <FormControl sx={{ width: '100%' }}>
+                      <InputLabel id="demo-select-small">Age</InputLabel>
+                      <Select
+                        name="customertemplatefolder"
+                        margin="normal"
+                        fullWidth
+                        labelId="demo-select-small"
+                        value={superofficeSetting.customertemplatefolder}
                         label="Age"
                         onChange={handleChange}
                       >
@@ -117,15 +145,6 @@ const SuperofficeSettings = (props) => {
                         })}
                       </Select>
                     </FormControl>
-                    {/* <TextField fullWidth label="Site Url" margin="normal" name="confirm" value={superofficeSetting.statetocreatecustomerfolder} variant="outlined" /> */}
-                  </Grid>
-                </Grid>
-                <Grid container spacing={3}>
-                  <Grid sx={{ m: 'auto' }} item lg={7} sm={8} xl={7} xs={12}>
-                    <Typography color="textPrimary" gutterBottom variant="h6"> Choose Cutomer Template </Typography>
-                  </Grid>
-                  <Grid item lg={4} sm={4} xl={4} xs={12}>
-                    <TextField fullWidth label="Site Url" margin="normal" name="confirm" value={superofficeSetting.customertemplatefolder} variant="outlined" />
                   </Grid>
                 </Grid>
                 <Divider />
@@ -138,6 +157,7 @@ const SuperofficeSettings = (props) => {
                           <TableRow>
                             {columns.map((column) => (
                               <TableCell
+                                sx={{ width: '50%' }}
                                 key={column.id}
                                 align={column.align}
                                 style={{ minWidth: column.minWidth }}
@@ -148,21 +168,32 @@ const SuperofficeSettings = (props) => {
                           </TableRow>
                         </TableHead>
                         <TableBody>
-                          {rows
-                            .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                            .map((row) => {
+                          {listOfProjectTypes
+                            //.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                            .map((project) => {
                               return (
-                                <TableRow hover role="checkbox" tabIndex={-1} key={row.code}>
-                                  {columns.map((column) => {
-                                    const value = row[column.id];
-                                    return (
-                                      <TableCell key={column.id} align={column.align}>
-                                        {column.format && typeof value === 'number'
-                                          ? column.format(value)
-                                          : value}
-                                      </TableCell>
-                                    );
-                                  })}
+                                <TableRow hover role="checkbox" tabIndex={-1} key={project.id}>
+                                  <TableCell> {project.name} </TableCell>
+                                  <TableCell> 
+                                    <FormControl sx={{ width: '100%' }}>
+                                      <InputLabel id="demo-select-small">Age</InputLabel>
+                                      <Select
+                                        margin="normal"
+                                        fullWidth
+                                        labelId="demo-select-small"
+                                        value={superofficeSetting.projecttypetemplates[project.id]}
+                                        label="Age"
+                                        onChange={handleChange}
+                                      >
+                                        <MenuItem value="">
+                                          <em>None</em>
+                                        </MenuItem>
+                                        {listOfTemplates.map(x => {
+                                          return <MenuItem value={x.id} key={x.id}>{x.name}</MenuItem>
+                                        })}
+                                      </Select>
+                                    </FormControl>  
+                                  </TableCell>
                                 </TableRow>
                               );
                             })}
