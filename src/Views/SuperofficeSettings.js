@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import api from 'Plugins/api'
 import { Box, Grid, Container, Typography, Card, CardHeader, Divider, CardContent, TextField, Button, 
-  Paper, Table, TableContainer, TableHead, TableRow, TableCell, TableBody, TablePagination } from '@mui/material';
+  Paper, Table, TableContainer, TableHead, TableRow, TableCell, TableBody, TablePagination, FormControl, Select, MenuItem, InputLabel } from '@mui/material';
 
 const SuperofficeSettings = (props) => {
 
@@ -18,9 +18,7 @@ const SuperofficeSettings = (props) => {
   });
 
   useEffect(() => {
-    getFolderTemplates()
-    getCompanyCategories()
-    getProjectTypes()
+    getSuperofficeSetting()
   }, []);
 
   const getFolderTemplates = () => {
@@ -32,6 +30,17 @@ const SuperofficeSettings = (props) => {
   const getCompanyCategories = () => {
     api.get(`/superoffice/get_company_categories`).then(({ data }) => {
       setListOfCategories(data)
+    })
+  };
+
+  const getSuperofficeSetting = () => {
+    api.get('superoffice/get_setting').then(({ data }) => {
+      if (data) {
+        setSuperofficeSetting(data)
+        getFolderTemplates()
+        getCompanyCategories()
+        getProjectTypes()
+      }
     })
   };
 
@@ -64,8 +73,9 @@ const SuperofficeSettings = (props) => {
   
 
   const handleChange = (event) => {
-    setValues({
-      ...values,
+    console.log(event.target.name, event.target.value);
+    setSuperofficeSetting({
+      ...superofficeSetting,
       [event.target.name]: event.target.value
     });
   };
@@ -88,8 +98,26 @@ const SuperofficeSettings = (props) => {
                     <Typography color="textPrimary" gutterBottom variant="h6"> While changing to which state the customer folder should be created ? </Typography>
                   </Grid>
                   <Grid item lg={4} sm={4} xl={4} xs={12}>
-                    <TextField fullWidth label="Site Url" margin="normal" name="confirm"
-                      onChange={handleChange} type="password" value={values.confirm} variant="outlined" />
+                  <FormControl sx={{ width: '100%' }}>
+                      <InputLabel id="demo-select-small">Age</InputLabel>
+                      <Select
+                        name="statetocreatecustomerfolder"
+                        margin="normal"
+                        fullWidth
+                        labelId="demo-select-small"
+                        value={superofficeSetting.statetocreatecustomerfolder}
+                        label="Age"
+                        onChange={handleChange}
+                      >
+                        <MenuItem value="">
+                          <em>None</em>
+                        </MenuItem>
+                        {listOfTemplates.map(x => {
+                          return <MenuItem value={x.id} key={x.id}>{x.name}</MenuItem>
+                        })}
+                      </Select>
+                    </FormControl>
+                    {/* <TextField fullWidth label="Site Url" margin="normal" name="confirm" value={superofficeSetting.statetocreatecustomerfolder} variant="outlined" /> */}
                   </Grid>
                 </Grid>
                 <Grid container spacing={3}>
@@ -97,8 +125,7 @@ const SuperofficeSettings = (props) => {
                     <Typography color="textPrimary" gutterBottom variant="h6"> Choose Cutomer Template </Typography>
                   </Grid>
                   <Grid item lg={4} sm={4} xl={4} xs={12}>
-                    <TextField fullWidth label="Site Url" margin="normal" name="confirm"
-                      onChange={handleChange} type="password" value={values.confirm} variant="outlined" />
+                    <TextField fullWidth label="Site Url" margin="normal" name="confirm" value={superofficeSetting.customertemplatefolder} variant="outlined" />
                   </Grid>
                 </Grid>
                 <Divider />
