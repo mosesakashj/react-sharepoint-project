@@ -1,13 +1,13 @@
 import React, { useEffect } from "react";
 import api from 'Plugins/api'
-import { Grid,Paper, Avatar, TextField, Button } from '@material-ui/core'
+import { Grid,Paper, Avatar, TextField, Button, Box, Container, NextLink, Typography } from '@mui/material'
 import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from 'react-redux'
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { updateUserDetails } from 'store/userDetailsSlice'
 
 const Login = () => {
   const { userDetails } = useSelector((state) => state.userDetailsSlice)
-  console.log(userDetails)
   const navigate = useNavigate();
   if (!userDetails) navigate('/')
   const dispatch = useDispatch()
@@ -15,13 +15,16 @@ const Login = () => {
     padding :20,
     height:'300px',
     width:280, 
-    margin:"100px auto"
+    margin:"100px auto",
+    textAlign: 'center'
   }
   
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const code = params.get('code');
     
+    console.log(api)
+
     if (code) {
       api.post('auth', { code: code }).then(({ data }) => {
         dispatch(updateUserDetails(data))
@@ -29,36 +32,42 @@ const Login = () => {
         navigate("/dashboard")
       })
     }
-  })
+  }, [])
+
   const getSharepointAuthUrl = () => {
     return api.get('auth/get_sharepoint_auth_url').then(({ data }) => {
       if (data && data.sharepointconfigdone) {
         window.open(data.url, "_self")
       }
-    }).catch(() => {
-      // throw error
     })
   }
   return (
     <Grid>
-        <Paper elevation={10} style={paperStyle}>
-          <Grid align='center'>
-              <Avatar style={{ backgroundColor:'#1bbd7e' }}></Avatar>
-              <h2>   Sign In </h2>
+      <Paper elevation={10} style={paperStyle}>
+        <Container maxWidth="sm" sx={{textAlign: 'center'}}>
+          <Box sx={{ my: 3 }}>
+            <Typography color="textPrimary" variant="h4"> Sign in </Typography>
+            <Typography color="textSecondary" gutterBottom variant="body2">
+              Sign in on the internal platform
+            </Typography>
+          </Box>
+          <Grid container spacing={3}>
+            <Grid item xs={12}>
+              <Button
+                onClick={getSharepointAuthUrl}
+                color="info"
+                fullWidth
+                // startIcon={<FacebookIcon />}
+                size="large"
+                variant="contained"
+              >
+                Login with Microsoft
+              </Button>
+            </Grid>
           </Grid>
-          <TextField variant="outlined" label='Username' placeholder='Enter username' fullWidth required/>
-          <TextField variant="outlined" style={{ marginTop:'20px' }} label='Password' placeholder='Enter password' type='password' fullWidth required/>
-          <Button type='submit' onClick={getSharepointAuthUrl} color='primary' variant="contained" style={{margin:'8px 0', marginTop:'20px'}} fullWidth>Sign in With Microsoft</Button>
-          {/* <Typography >
-                <Link href="#" > Forgot password ? </Link>
-              </Typography>
-              <Typography > 
-                Do you have an account ?
-                <Link href="#" > Sign Up  </Link>
-              </Typography> 
-          */}
-        </Paper>
-      </Grid>
+        </Container>
+      </Paper>
+    </Grid>
   );
 }
 

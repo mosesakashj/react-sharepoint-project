@@ -5,18 +5,16 @@ import { Box, Grid, Container, Typography, Card, CardHeader, Divider, CardConten
 
 const SuperofficeSettings = (props) => {
 
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const columns = [
+    { id: 'name', label: 'Project type', width: 170 },
+    { id: 'code', label: 'Template', width: 100 },
+  ];
+
   const [superofficeSetting, setSuperofficeSetting] = useState({})
   const [listOfTemplates, setListOfTemplates] = useState([])
   const [listOfCategories, setListOfCategories] = useState([])
   const [listOfProjectTypes, setListOfProjectTypes] = useState([])
   
-  const [values, setValues] = useState({
-    password: '',
-    confirm: ''
-  });
-
   useEffect(() => {
     getSuperofficeSetting()
   }, []);
@@ -24,19 +22,23 @@ const SuperofficeSettings = (props) => {
   const getFolderTemplates = () => {
     api.get(`/sharepoint/get_template_folders`).then(({ data }) => {
       setListOfTemplates(data)
+      console.log(superofficeSetting)
+
+      // setSuperofficeSetting({ ...superofficeSetting })
     })
   };
 
   const getCompanyCategories = () => {
     api.get(`/superoffice/get_company_categories`).then(({ data }) => {
       setListOfCategories(data)
+      // setSuperofficeSetting({ ...superofficeSetting })
     })
   };
 
   const getSuperofficeSetting = () => {
     api.get('superoffice/get_setting').then(({ data }) => {
       if (data) {
-        setSuperofficeSetting(data)
+        setSuperofficeSetting({...data})
         getFolderTemplates()
         getCompanyCategories()
         getProjectTypes()
@@ -47,40 +49,36 @@ const SuperofficeSettings = (props) => {
   const getProjectTypes = () => {
     api.get(`/superoffice/get_project_types`).then(({ data }) => {
       setListOfProjectTypes(data)
-      if (superofficeSetting.projecttypetemplates) superofficeSetting.projecttypetemplates = {}
+      let settingObj = {...superofficeSetting }
+      if (settingObj.projecttypetemplates) settingObj.projecttypetemplates = {}
       data.forEach(project => {
-        if (!superofficeSetting.projecttypetemplates[project.id]) superofficeSetting.projecttypetemplates[project.id] = ''
+        if (!settingObj.projecttypetemplates[project.id]) settingObj.projecttypetemplates[project.id] = ''
       })
+      setSuperofficeSetting({...settingObj})
+      console.log(superofficeSetting)
     })
   };
 
-  function createData(name, code, population, size) {
-    const density = population / size;
-    return { name, code, population, size, density };
+  const saveUpdateHandler = () => {
+    let model = JSON.parse(JSON.stringify(this.superofficeSetting))
+    delete model.created_at
+    api.execute('put', 'superoffice/update_setting', model).then(() => {
+      // this.$root.$emit('snackbar', { snackbar: true, color: 'success', text: this.$t('message.common.savedSuccess') })
+    }).catch(() => {
+      // this.$root.$emit('snackbar', { snackbar: true, color: 'error', text: this.$t('message.common.failed') })
+    })
   }
-  const columns = [
-    { id: 'name', label: 'Project type', width: 170 },
-    { id: 'code', label: 'Template', width: 100 },
-  ];
-  const rows = [
-    createData('India', 'IN', 1324171354, 3287263),
-    createData('China', 'CN', 1403500365, 9596961),
-    createData('Italy', 'IT', 60483973, 301340),
-    createData('United States', 'US', 327167434, 9833520),
-    createData('Canada', 'CA', 37602103, 9984670),
-  ];
-
-  
 
   const handleChange = (event) => {
-    console.log(event.target.name, event.target.value);
     setSuperofficeSetting({
       ...superofficeSetting,
       [event.target.name]: event.target.value
     });
   };
+
   return (
     <>
+    {JSON.stringify(superofficeSetting.statetocreatecustomerfolder)}
       <Box component="main" sx={{ flexGrow: 1, py: 8 }}>
         <Container maxWidth="lg">
           <Typography sx={{ mb: 3 }} variant="h4">
@@ -99,23 +97,21 @@ const SuperofficeSettings = (props) => {
                   </Grid>
                   <Grid item lg={4} sm={4} xl={4} xs={12}>
                     <FormControl sx={{ width: '100%' }}>
-                      {/* <InputLabel id="demo-select-small">Age</InputLabel> */}
                       <Select
+                        defaultValue={''}
                         name="statetocreatecustomerfolder"
-                        margin="normal"
                         displayEmpty
                         inputProps={{ 'aria-label': 'Without label' }}
                         fullWidth
                         labelId="demo-select-small"
-                        value={superofficeSetting.statetocreatecustomerfolder}
-                        label="Age"
-                        onChange={handleChange}
+                        value={superofficeSetting.statetocreatecustomerfolder ?? ''}
+                        onChange={(e) => setSuperofficeSetting({ ...superofficeSetting, statetocreatecustomerfolder: e.target.value})}
                       >
                         <MenuItem value="">
                           <em>None</em>
                         </MenuItem>
                         {listOfCategories.map(x => {
-                          return <MenuItem value={x.id} key={x.id}>{x.name}</MenuItem>
+                          return <MenuItem value={x.id} key={x.id}>{x.id}--{x.name}</MenuItem>
                         })}
                       </Select>
                     </FormControl>
@@ -127,14 +123,12 @@ const SuperofficeSettings = (props) => {
                   </Grid>
                   <Grid item lg={4} sm={4} xl={4} xs={12}>
                   <FormControl sx={{ width: '100%' }}>
-                      <InputLabel id="demo-select-small">Age</InputLabel>
                       <Select
+                        defaultValue={''}
                         name="customertemplatefolder"
-                        margin="normal"
                         fullWidth
                         labelId="demo-select-small"
-                        value={superofficeSetting.customertemplatefolder}
-                        label="Age"
+                        value={superofficeSetting.customertemplatefolder ?? ''}
                         onChange={handleChange}
                       >
                         <MenuItem value="">
@@ -160,7 +154,6 @@ const SuperofficeSettings = (props) => {
                                 sx={{ width: '50%' }}
                                 key={column.id}
                                 align={column.align}
-                                style={{ minWidth: column.minWidth }}
                               >
                                 {column.label}
                               </TableCell>
@@ -176,13 +169,11 @@ const SuperofficeSettings = (props) => {
                                   <TableCell> {project.name} </TableCell>
                                   <TableCell> 
                                     <FormControl sx={{ width: '100%' }}>
-                                      <InputLabel id="demo-select-small">Age</InputLabel>
                                       <Select
-                                        margin="normal"
+                                        defaultValue={''}
                                         fullWidth
                                         labelId="demo-select-small"
-                                        value={superofficeSetting.projecttypetemplates[project.id]}
-                                        label="Age"
+                                        value={superofficeSetting.projecttypetemplates[project.id] ?? ''}
                                         onChange={handleChange}
                                       >
                                         <MenuItem value="">
@@ -204,7 +195,7 @@ const SuperofficeSettings = (props) => {
                 </Grid>
               </CardContent>
               <Box sx={{ display: 'flex', justifyContent: 'flex-end', p: 2 }}>
-                <Button color="primary" variant="contained"> Update </Button>
+                <Button color="primary" variant="contained" onClick={saveUpdateHandler}> Update </Button>
               </Box>
             </Card>
           </form>
