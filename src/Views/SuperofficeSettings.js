@@ -22,16 +22,12 @@ const SuperofficeSettings = (props) => {
   const getFolderTemplates = () => {
     api.get(`/sharepoint/get_template_folders`).then(({ data }) => {
       setListOfTemplates(data)
-      console.log(superofficeSetting)
-
-      // setSuperofficeSetting({ ...superofficeSetting })
     })
   };
 
   const getCompanyCategories = () => {
     api.get(`/superoffice/get_company_categories`).then(({ data }) => {
       setListOfCategories(data)
-      // setSuperofficeSetting({ ...superofficeSetting })
     })
   };
 
@@ -55,25 +51,23 @@ const SuperofficeSettings = (props) => {
         if (!settingObj.projecttypetemplates[project.id]) settingObj.projecttypetemplates[project.id] = ''
       })
       setSuperofficeSetting({...settingObj})
-      console.log(superofficeSetting)
     })
   };
 
   const saveUpdateHandler = () => {
-    let model = JSON.parse(JSON.stringify(this.superofficeSetting))
+    let model = JSON.parse(JSON.stringify(superofficeSetting))
     delete model.created_at
-    api.execute('put', 'superoffice/update_setting', model).then(() => {
+    api.put('superoffice/update_setting', model).then(() => {
       // this.$root.$emit('snackbar', { snackbar: true, color: 'success', text: this.$t('message.common.savedSuccess') })
     }).catch(() => {
       // this.$root.$emit('snackbar', { snackbar: true, color: 'error', text: this.$t('message.common.failed') })
     })
   }
 
-  const handleChange = (event) => {
-    setSuperofficeSetting({
-      ...superofficeSetting,
-      [event.target.name]: event.target.value
-    });
+  const handleChange = (event, projectId) => {
+    let settingObj = {...superofficeSetting }
+    settingObj.projecttypetemplates[projectId] = event.target.value
+    setSuperofficeSetting({...settingObj})
   };
 
   return (
@@ -129,7 +123,7 @@ const SuperofficeSettings = (props) => {
                         fullWidth
                         labelId="demo-select-small"
                         value={superofficeSetting.customertemplatefolder ?? ''}
-                        onChange={handleChange}
+                        onChange={(e) => setSuperofficeSetting({ ...superofficeSetting, customertemplatefolder: e.target.value})}
                       >
                         <MenuItem value="">
                           <em>None</em>
@@ -174,7 +168,7 @@ const SuperofficeSettings = (props) => {
                                         fullWidth
                                         labelId="demo-select-small"
                                         value={superofficeSetting.projecttypetemplates[project.id] ?? ''}
-                                        onChange={handleChange}
+                                        onChange={(e) => handleChange(e, project.id)}
                                       >
                                         <MenuItem value="">
                                           <em>None</em>
