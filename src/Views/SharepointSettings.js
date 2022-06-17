@@ -122,8 +122,15 @@ const SharepointSettings = (props) => {
     window.localStorage.setItem(process.env.REACT_APP_SHAREPOINTSITEURL, modelObj.siteurl)
   };
 
-  const toggleCheckboxValue = () => {
-    console.log(selectedProps);
+  const toggleCheckboxValue = (checkedValue) => {
+    let props = JSON.parse(JSON.stringify(selectedProps)) 
+    props = props.reduce((a,b) => { if (a.indexOf(b) < 0) a.push(b); return a; },[]);
+    if (props.includes(checkedValue)) {
+      props = props.filter((ele) => ele !== checkedValue)
+    } else {
+      props.push(checkedValue)
+    }
+    setSelectedProps(props)
   };
 
   
@@ -229,7 +236,7 @@ const SharepointSettings = (props) => {
                       return (
                         <Grid item md={3} sm={6} xs={12} key={index}>
                           <FormControlLabel control={( 
-                                <Checkbox color="primary" onClick={() => toggleCheckboxValue(index)} defaultChecked checked={selectedProps.includes(prop.name)}
+                                <Checkbox color="primary" onClick={() => toggleCheckboxValue(prop.name)} defaultChecked checked={selectedProps.includes(prop.name)}
                                    /> )} label={`${prop.title} (${prop.name})`} />
                         </Grid>
                       )
