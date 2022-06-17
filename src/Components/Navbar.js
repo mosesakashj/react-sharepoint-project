@@ -22,8 +22,6 @@ const ResponsiveAppBar = () => {
 
   const navigate = useNavigate();
   const { userDetails } = useSelector((state) => state.userDetailsSlice)
-  console.log(userDetails)
-
   const [anchorElNav, setAnchorElNav] = useState(null);
   const [anchorElUser, setAnchorElUser] = useState(null);
 
@@ -38,14 +36,10 @@ const ResponsiveAppBar = () => {
     setAnchorElNav(null);
   };
 
-  const changeRoute = (route) => {
-    console.log('sdfsdf');
-    // navigate(route);
-  };
-
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
   };
+
   if (userDetails) {
     return (
       <AppBar position="static">

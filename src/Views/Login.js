@@ -23,8 +23,6 @@ const Login = () => {
     const params = new URLSearchParams(window.location.search);
     const code = params.get('code');
     
-    console.log(api)
-
     if (code) {
       api.post('auth', { code: code }).then(({ data }) => {
         dispatch(updateUserDetails(data))

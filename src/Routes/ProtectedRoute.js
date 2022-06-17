@@ -6,7 +6,6 @@ import { useSelector } from 'react-redux'
 const ProtectedRoute = ({ children }) => {
   const { userDetails } = useSelector((state) => state.userDetailsSlice)
   const isAuthenticated = Boolean(userDetails)
-  console.log("this", isAuthenticated, userDetails);
 
   if (!isAuthenticated) {
     return <Navigate to="/" replace />;
