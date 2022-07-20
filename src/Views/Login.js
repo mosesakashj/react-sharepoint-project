@@ -1,14 +1,16 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import api from 'Plugins/api'
-import { Grid,Paper, Avatar, TextField, Button, Box, Container, NextLink, Typography } from '@mui/material'
+import LoadingButton from 'Components/LoadingButton';
+import { Grid,Paper, Box, Container, Typography } from '@mui/material'
 import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from 'react-redux'
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import {ArrowBack} from '@mui/icons-material';
 import { updateUserDetails } from 'store/userDetailsSlice'
 
-const Login = () => {
+const Login = (props) => {
   const { userDetails } = useSelector((state) => state.userDetailsSlice)
-  const navigate = useNavigate();
+  const navigate = useNavigate()
+  const [loading, setLoading] = useState(false);
   if (!userDetails) navigate('/')
   const dispatch = useDispatch()
   const paperStyle = {
@@ -30,15 +32,19 @@ const Login = () => {
         navigate("/dashboard")
       })
     }
-  }, [])
+  }, []);
 
   const getSharepointAuthUrl = () => {
+    setTimeout(() => setLoading(true), 0)
     return api.get('auth/get_sharepoint_auth_url').then(({ data }) => {
       if (data && data.sharepointconfigdone) {
         window.open(data.url, "_self")
       }
     })
-  }
+    .finally(() => {
+      setTimeout(() => setLoading(false), 0)
+    })
+  };
   return (
     <Grid>
       <Paper elevation={10} style={paperStyle}>
@@ -51,16 +57,16 @@ const Login = () => {
           </Box>
           <Grid container spacing={3}>
             <Grid item xs={12}>
-              <Button
-                onClick={getSharepointAuthUrl}
-                color="info"
+              <LoadingButton color="info"
                 fullWidth
-                // startIcon={<FacebookIcon />}
+                startIcon={<ArrowBack />}
                 size="large"
-                variant="contained"
-              >
-                Login with Microsoft
-              </Button>
+                variant="contained" 
+                loading={loading} 
+                onClick={getSharepointAuthUrl}
+              > 
+                Login with Microsoft 
+              </LoadingButton>
             </Grid>
           </Grid>
         </Container>

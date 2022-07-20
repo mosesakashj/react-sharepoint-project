@@ -229,7 +229,6 @@ const SharepointSettings = (props) => {
                   </Grid>
                 </Grid>
                 <Typography color="textPrimary" gutterBottom variant="h6"> Properties Configuration </Typography>
-                {JSON.stringify(selectedProps)}
                 <Grid container spacing={6} wrap="wrap">
                   <>
                     {listOfProperties.map((prop, index) => {
