@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from 'react-redux'
 import {ArrowBack} from '@mui/icons-material';
 import { updateUserDetails } from 'store/userDetailsSlice'
+import Cookies from 'js-cookie'
 
 const Login = (props) => {
   const { userDetails } = useSelector((state) => state.userDetailsSlice)
@@ -24,12 +25,14 @@ const Login = (props) => {
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const code = params.get('code');
-    
+
     if (code) {
+      setTimeout(() => setLoading(true), 0)
       api.post('auth', { code: code }).then(({ data }) => {
-        dispatch(updateUserDetails(data))
-        sessionStorage.setItem(process.env.REACT_APP_TOKEN, JSON.stringify(data));
+        Cookies.set(process.env.REACT_APP_TOKEN, data.token, { expires: 3 }) // 3 days
+        Cookies.set(process.env.REACT_APP_USER, JSON.stringify(data), { expires: 3 }) // 3 days
         navigate("/dashboard")
+        dispatch(updateUserDetails(data))
       })
     }
   }, []);
@@ -38,6 +41,7 @@ const Login = (props) => {
     setTimeout(() => setLoading(true), 0)
     return api.get('auth/get_sharepoint_auth_url').then(({ data }) => {
       if (data && data.sharepointconfigdone) {
+        console.log(data)
         window.open(data.url, "_self")
       }
     })

@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
 import api from 'Plugins/api'
-import { Box, Grid, Container, Typography, Card, CardHeader, Divider, CardContent, TextField, Button, 
-  Paper, Table, TableContainer, TableHead, TableRow, TableCell, TableBody, TablePagination, FormControl, Select, MenuItem, InputLabel } from '@mui/material';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { Box, Grid, Container, Typography, Card, Divider, CardContent, Button, 
+  Paper, Table, TableContainer, TableHead, TableRow, TableCell, TableBody, FormControl, Select, MenuItem } from '@mui/material';
 
 const SuperofficeSettings = (props) => {
 
@@ -58,9 +60,9 @@ const SuperofficeSettings = (props) => {
     let model = JSON.parse(JSON.stringify(superofficeSetting))
     delete model.created_at
     api.put('superoffice/update_setting', model).then(() => {
-      // this.$root.$emit('snackbar', { snackbar: true, color: 'success', text: this.$t('message.common.savedSuccess') })
+      toast("Saved Successfully !");
     }).catch(() => {
-      // this.$root.$emit('snackbar', { snackbar: true, color: 'error', text: this.$t('message.common.failed') })
+      toast.error('Failed !')
     })
   }
 
@@ -72,7 +74,7 @@ const SuperofficeSettings = (props) => {
 
   return (
     <>
-    {JSON.stringify(superofficeSetting.statetocreatecustomerfolder)}
+      <ToastContainer position="bottom-right"/>
       <Box component="main" sx={{ flexGrow: 1, py: 8 }}>
         <Container maxWidth="lg">
           <Typography sx={{ mb: 3 }} variant="h4">

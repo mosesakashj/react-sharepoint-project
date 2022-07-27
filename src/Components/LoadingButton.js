@@ -20,7 +20,7 @@ const LoadingButton = (props) => {
   else if (loading) {
     return (
       <Button className={classes ? classes.button : ''} {...other}>
-        <CircularProgress />
+        <CircularProgress size={19} />
       </Button>
     );
   } else {

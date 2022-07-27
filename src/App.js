@@ -6,6 +6,10 @@ import ProtectedRoute from "Routes/ProtectedRoute";
 import './App.css';
 import Navbar from 'Components/Navbar'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { useDispatch } from 'react-redux'
+import { updateUserDetails } from 'store/userDetailsSlice'
+import { useEffect } from "react";
+import Cookies from 'js-cookie'
 
 
 function Profile() {
@@ -33,6 +37,12 @@ function OthersProfile() {
   );
 }
 const App = () => {
+  const dispatch = useDispatch()
+  
+  useEffect(() => {
+    if (Cookies.get(process.env.REACT_APP_USER)) dispatch(updateUserDetails(JSON.parse(Cookies.get(process.env.REACT_APP_USER))))
+  },[])
+
   return (
     <div>
       <Router>

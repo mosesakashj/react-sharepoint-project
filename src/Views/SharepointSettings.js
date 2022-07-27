@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
 import api from 'Plugins/api'
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import { Box, Grid, Container, Typography, Card, CardHeader, Divider, CardContent, TextField, Button, FormControlLabel, Checkbox, FormControl, Select, MenuItem } from '@mui/material';
 
 const SharepointSettings = (props) => {
@@ -133,9 +135,26 @@ const SharepointSettings = (props) => {
     setSelectedProps(props)
   };
 
+  const saveSelectedProps = () => {
+    // this.propActionLoading = true
+    const model = {...modelObj }
+    let props = JSON.parse(JSON.stringify(selectedProps)) 
+    props = props.reduce((a,b) => { if (a.indexOf(b) < 0) a.push(b); return a; },[]);
+    setSelectedProps(props)
+    model.properties = JSON.stringify(props)
+    api.post(`${MODULE_URL}`, model).then(() => {
+      api.get(`${MODULE_URL}/restore_folders`)
+      toast("Saved Successfully !");
+    })
+    .finally(() => {
+      // this.propActionLoading = false
+    })
+  }
+
   
   return (
     <>
+      <ToastContainer position="bottom-right"/>
       <Box component="main" sx={{ flexGrow: 1, py: 8 }}>
         <Container maxWidth="lg">
           <Typography sx={{ mb: 3 }} variant="h4">
@@ -245,7 +264,7 @@ const SharepointSettings = (props) => {
               </CardContent>
               <Divider />
               <Box sx={{ display: 'flex', justifyContent: 'flex-end', p: 2 }}>
-                <Button color="primary" variant="contained"> Update </Button>
+                <Button color="primary" variant="contained" onClick={saveSelectedProps}> Update </Button>
               </Box>
             </Card>
           </form>
