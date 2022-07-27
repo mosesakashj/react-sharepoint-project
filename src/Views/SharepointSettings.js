@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import api from 'Plugins/api'
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { Box, Grid, Container, Typography, Card, CardHeader, Divider, CardContent, TextField, Button, FormControlLabel, Checkbox, FormControl, Select, MenuItem } from '@mui/material';
+import { Box, Grid, Container, Typography, Card, CardHeader, Divider, CardContent, TextField, Button, FormControlLabel, LinearProgress, Checkbox, FormControl, Select, MenuItem } from '@mui/material';
 
 const SharepointSettings = (props) => {
 
@@ -14,6 +14,7 @@ const SharepointSettings = (props) => {
   const [contentType, setContentType] = useState([])
   const [listNames, setListNames] = useState([])
   const [loadType, setLoadType] = useState('')
+  const [loading, setLoading] = useState(true)
   const MODULE_URL = 'sharepointsetting'
 
   const [values, setValues] = useState({
@@ -104,6 +105,7 @@ const SharepointSettings = (props) => {
         listOfProperties.forEach(options => { 
           if (options.required && !options.readonly) result.push(options.name) 
         })
+        setLoading(false)
       }
     })
     result = result.reduce((a,b) => { if (a.indexOf(b) < 0) a.push(b); return a; },[]);
@@ -166,6 +168,10 @@ const SharepointSettings = (props) => {
             <Card>
               <CardHeader subheader="Sharepoint Configuration" title="Sharepoint Configuration"/>
               <Divider />
+              {loading
+                  ?  <LinearProgress color="secondary" />
+                  : <></>
+                }
               <CardContent>
                 <Grid container spacing={3}>
                   <Grid item lg={5} sm={6} xl={5} xs={12}>
