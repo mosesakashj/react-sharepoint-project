@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import api from 'Plugins/api'
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { Box, Grid, Container, Typography, Card, Divider, CardContent, Button, 
+import { Box, Grid, Container, Typography, Card, Divider, CardContent, Button, LinearProgress,
   Paper, Table, TableContainer, TableHead, TableRow, TableCell, TableBody, FormControl, Select, MenuItem } from '@mui/material';
 
 const SuperofficeSettings = (props) => {
@@ -16,6 +16,7 @@ const SuperofficeSettings = (props) => {
   const [listOfTemplates, setListOfTemplates] = useState([])
   const [listOfCategories, setListOfCategories] = useState([])
   const [listOfProjectTypes, setListOfProjectTypes] = useState([])
+  const [loading, setLoading] = useState(true)
   
   useEffect(() => {
     getSuperofficeSetting()
@@ -24,6 +25,7 @@ const SuperofficeSettings = (props) => {
   const getFolderTemplates = () => {
     api.get(`/sharepoint/get_template_folders`).then(({ data }) => {
       setListOfTemplates(data)
+      setLoading(false)
     })
   };
 
@@ -86,6 +88,10 @@ const SuperofficeSettings = (props) => {
             <Card>
               {/* <CardHeader subheader="Superoffice Configuration" title="Superoffice Configuration"/> */}
               {/* <Divider /> */}
+              {loading
+                  ?  <LinearProgress color="secondary" />
+                  : <></>
+                }
               <CardContent>
                 <Grid container spacing={3}>
                   <Grid sx={{ m: 'auto' }} item lg={7} sm={8} xl={7} xs={12}>

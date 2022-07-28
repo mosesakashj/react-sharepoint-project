@@ -29,6 +29,7 @@ const Login = (props) => {
     if (code) {
       setTimeout(() => setLoading(true), 0)
       api.post('auth', { code: code }).then(({ data }) => {
+        api.defaults.headers.common['Authorization'] = `Bearer ${data.token}`;
         Cookies.set(process.env.REACT_APP_TOKEN, data.token, { expires: 3 }) // 3 days
         Cookies.set(process.env.REACT_APP_USER, JSON.stringify(data), { expires: 3 }) // 3 days
         navigate("/dashboard")
