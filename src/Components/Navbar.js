@@ -12,15 +12,21 @@ import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import AdbIcon from '@mui/icons-material/Adb';
-import { useSelector } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom';
+import Cookies from 'js-cookie'
+import { updateUserDetails } from 'store/userDetailsSlice'
 
 const pages = ['Customer', 'Templates', '/sharepoint', '/superoffice'];
 const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
 
 const ResponsiveAppBar = () => {
-
   const navigate = useNavigate();
+  const dispatch = useDispatch()
+  const userMenu = [{
+    text: 'Logout',
+    onclick: () => logoutHandler
+  }]
   const { userDetails } = useSelector((state) => state.userDetailsSlice)
   const [anchorElNav, setAnchorElNav] = useState(null);
   const [anchorElUser, setAnchorElUser] = useState(null);
@@ -28,6 +34,13 @@ const ResponsiveAppBar = () => {
   const handleOpenNavMenu = (event) => {
     setAnchorElNav(event.currentTarget);
   };
+  const logoutHandler = () => {
+    Cookies.remove(process.env.REACT_APP_TOKEN)
+    Cookies.remove(process.env.REACT_APP_USER)
+    dispatch(updateUserDetails(null))
+    setAnchorElUser(null);
+    navigate('/')
+  }
   const handleOpenUserMenu = (event) => {
     setAnchorElUser(event.currentTarget);
   };
@@ -107,13 +120,13 @@ const ResponsiveAppBar = () => {
               ))}
             </Box>
             <Box>
-              <Typography textAlign="center">{userDetails.displayname}</Typography>
+              <Typography textAlign="center" sx={{ m: 1 }}>{userDetails.displayname}</Typography>
             </Box>
   
             <Box sx={{ flexGrow: 0 }}>
               <Tooltip title="Open settings">
                 <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                  <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
+                  <Avatar alt={userDetails.displayname} src="/static/images/avatar/2.jpg" />
                 </IconButton>
               </Tooltip>
               <Menu
@@ -132,9 +145,9 @@ const ResponsiveAppBar = () => {
                 open={Boolean(anchorElUser)}
                 onClose={handleCloseUserMenu}
               >
-                {settings.map((setting) => (
-                  <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                    <Typography textAlign="center">{setting}</Typography>
+                {userMenu.map((menu) => (
+                  <MenuItem key={menu.text} onClick={menu.onclick()}>
+                    <Typography textAlign="center">{menu.text}</Typography>
                   </MenuItem>
                 ))}
               </Menu>
